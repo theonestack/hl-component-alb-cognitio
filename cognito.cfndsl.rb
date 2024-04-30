@@ -1,29 +1,30 @@
 CloudFormation do
 
   Condition(:EnableCognito, FnEquals(Ref(:CreateCognitoResources), 'true'))
-
+  Condition(:ExternalUserPool, FnNot(FnEquals(Ref(:CustomUserPoolId), '')))
+  Condition(:CreateUserPool, FnAnd([Condition('EnableCognito'), FnNot(Condition('ExternalUserPool'))]))
   SNS_Topic(:CognitoTopic)
 
   Cognito_UserPool(:UserPool) do
-    Condition :EnableCognito
+    Condition :CreateUserPool
     UserPoolName user_pool['name']
   end  
 
   Cognito_UserPoolGroup(:UserPoolGroup) do
-    Condition :EnableCognito
+    Condition :CreateUserPool
     GroupName user_pool_group['name']
-    UserPoolId Ref(:UserPool)
+    UserPoolId FnIf('CreateUserPool', Ref('UserPool'), Ref('CustomUserPoolId'))
   end  
 
   Cognito_UserPoolDomain(:UserPoolDomain) do
-    Condition :EnableCognito
+    Condition :CreateUserPool
     Domain user_pool_domain['name']
-    UserPoolId Ref(:UserPool)
+    UserPoolId FnIf('CreateUserPool', Ref('UserPool'), Ref('CustomUserPoolId'))
   end
 
   Cognito_UserPoolClient(:UserPoolClient) do
     Condition :EnableCognito
-    UserPoolId Ref(:UserPool)
+    UserPoolId FnIf('CreateUserPool', Ref('UserPool'), Ref('CustomUserPoolId'))
     ClientName user_pool_client['name']
     GenerateSecret user_pool_client['generate_secret']
     AllowedOAuthFlows user_pool_client['allowed_oauth_flows']
@@ -38,7 +39,7 @@ CloudFormation do
   end
   
   Output(:UserPoolId) {
-    Value(FnIf(:EnableCognito, FnGetAtt(:UserPool, :Arn), ''))
+    Value(FnIf(:CreateUserPool, FnGetAtt(:UserPool, :Arn), ''))
   }
 
   Output(:UserPoolClientId) {
@@ -46,7 +47,7 @@ CloudFormation do
   }
 
   Output(:UserPoolDomainName) {
-    Value(FnIf(:EnableCognito, Ref(:UserPoolDomain), ''))
+    Value(FnIf(:CreateUserPool, Ref(:UserPoolDomain), ''))
   }
 
   Output(:URL){

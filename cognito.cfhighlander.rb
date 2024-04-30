@@ -6,5 +6,6 @@ CfhighlanderTemplate do
     ComponentParam 'EnvironmentType', 'development', isGlobal: true
     ComponentParam 'DnsDomain', isGlobal: true
     ComponentParam 'CreateCognitoResources', 'true', allowedValues: ['true','false']
+    ComponentParam 'CustomUserPoolId', ''
   end
 end
