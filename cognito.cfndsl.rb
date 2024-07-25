@@ -37,19 +37,19 @@ CloudFormation do
     ExplicitAuthFlows user_pool_client['explicit_auth_flows']
   end
   
-  Output(:UserPoolId) {
+  Output(:CognitoUserPoolId) {
     Value(FnIf(:EnableCognito, FnGetAtt(:UserPool, :Arn), ''))
   }
 
-  Output(:UserPoolClientId) {
+  Output(:CognitoUserPoolId) {
     Value(FnIf(:EnableCognito, Ref(:UserPoolClient), ''))
   }
 
-  Output(:UserPoolDomainName) {
+  Output(:CognitoUserPoolId) {
     Value(FnIf(:EnableCognito, Ref(:UserPoolDomain), ''))
   }
 
-  Output(:URL){
+  Output(:CongitoURL){
     Value(FnIf(:EnableCognito, FnSub("https://app.${EnvironmentName}.${DnsDomain}"),''))
   }
 end
