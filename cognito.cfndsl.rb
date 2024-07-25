@@ -41,15 +41,15 @@ CloudFormation do
     Value(FnIf(:EnableCognito, FnGetAtt(:UserPool, :Arn), ''))
   }
 
-  Output(:CognitoUserPoolId) {
+  Output(:CognitoUserPoolClientId) {
     Value(FnIf(:EnableCognito, Ref(:UserPoolClient), ''))
   }
 
-  Output(:CognitoUserPoolId) {
+  Output(:CognitoUserPoolDomainName) {
     Value(FnIf(:EnableCognito, Ref(:UserPoolDomain), ''))
   }
 
-  Output(:CongitoURL){
+  Output(:CognitoURL){
     Value(FnIf(:EnableCognito, FnSub("https://app.${EnvironmentName}.${DnsDomain}"),''))
   }
 end
